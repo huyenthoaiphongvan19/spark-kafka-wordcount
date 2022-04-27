@@ -1,0 +1,40 @@
+#start zookeeper  kafka-3.1.0-src
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+#start kafka
+bin/kafka-server-start.sh config/server.properties
+
+#create topic 
+bin/kafka-topics.sh --create --topic topic1 --bootstrap-server localhost:9092 --partitions 1 --replication-fator 1
+
+#write event into topic
+bin/kafka-console-producer.sh --topic topic1 --bootstrap-server localhost:9092
+
+#read event from topic
+bin/kafka-console-consumer.sh --topic topic1 --from-beginning --bootstrap-server localhost:9092
+
+
+#connect Kafka with Spark to compile wordcount
+
+#create topic 
+bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-fator 3 --partitions 3 --topic demowordcount
+
+#write event into topic
+bin/kafka-console-producer.sh --broker-list localhost:9092  --topic demowordcount
+
+# cd spark folder
+# spark-streaming-kafka-0-10_2.12-3.1.0
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.1.0 wordcount/demokafka.py wordcount/pyka.py
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.1.0 wordcount/demokafka.py
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.1.0 wordcount/demo.py wordcount/pyka.py
+
+bin/spark-submit --jars org.apache.spark:spark-streaming-kafka-0-10_2.12:3.1.0 wordcount/demokafka.py
+bin/spark-submit --jars spark-streaming-kafka-0-10-assembly_2.13-3.2.1.jar wordcount/demo.py
+bin/spark-submit --jars /home/huy/spark-3.2.1-bin-hadoop3.2/spark-streaming-kafka-0-10_2.12-3.1.0.jar --packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.1.0 wordcount/demo.py
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.3.0 kafka/wordCount.py
+
+
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-10-assembly_2.12:3.2.1 wordcount/demo.py
+bin/spark-submit --jars spark-streaming-kafka-0-10-assembly_2.12_3.2.1.jar wordcount/demo.py
+
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-10-assembly_2.12:3.2.1 --jars spark-streaming-kafka-0-10-assembly_2.12_3.2.1.jar wordcount/demokafka.py
